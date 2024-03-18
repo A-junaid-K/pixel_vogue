@@ -3,6 +3,7 @@ package database
 import (
 	"fmt"
 	"log"
+	"os"
 
 	models "github.com/A-junaid-K/pixel_vogue/user/models/request"
 	"gorm.io/driver/postgres"
@@ -11,9 +12,9 @@ import (
 
 var DB *gorm.DB
 
-func connectDb() {
+func ConnectDb() {
 	var err error
-	dsn := "host=localhost user=ajk password=11012005 owner=pixelvogue port=5432 sslmode=disable"
+	dsn:=os.Getenv("dsn")
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Panic(err)

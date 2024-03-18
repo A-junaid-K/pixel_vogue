@@ -57,7 +57,7 @@ func PasswordValidator(s string) (sixOrMore, number, upper, special bool) {
 			special = true
 		case unicode.IsLetter(c) || c == ' ':
 			letters++
-		default:
+		default: 
 			//return false, false, false, false
 		}
 	}

@@ -1,7 +1,15 @@
 package routes
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/A-junaid-K/pixel_vogue/user/api"
+	"github.com/gin-gonic/gin"
+)
 
-func route (c *gin.Context){
-	
+func UserRoutes(router *gin.Engine) {
+	router.LoadHTMLGlob("templates/*.html")
+	r := router.Group("/user")
+	{
+		r.POST("/signup", api.SignUp)
+	}
+
 }

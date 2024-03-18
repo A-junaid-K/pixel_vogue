@@ -1,13 +1,23 @@
 package main
 
-import "github.com/go-playground/validator/v10"
+import (
+	"log"
 
-type User struct {
-	Username string `validate:"required,min=3,max=20"`
-	Email    string `validate:"required,email"`
-	Age      int    `validate:"gte=0,lte=130"`
+	"github.com/A-junaid-K/pixel_vogue/user/database"
+	"github.com/A-junaid-K/pixel_vogue/user/routes"
+	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
+)
+
+func init() {
+	if err := godotenv.Load(".env"); err != nil {
+		log.Fatalf("failed to load env file : %v", err)
+	}
+	database.ConnectDb()
 }
 
 func main() {
-	validator.New()
+	router := gin.Default()
+	routes.UserRoutes(router)
+	router.Run(":8000")
 }

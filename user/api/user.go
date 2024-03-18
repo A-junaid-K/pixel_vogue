@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/A-junaid-K/pixel_vogue/user/database"
 	models "github.com/A-junaid-K/pixel_vogue/user/models/request"
@@ -101,10 +103,44 @@ func SignUp(c *gin.Context) {
 	pass := utilities.Hashpassword(userReq.Password)
 
 	// ----Generate OTP
+	otp := utilities.GenerateOTP()
 
-	database.DB.Create(models.User{
-		Username: userReq.Username,
-		Email: userReq.Email,
-	})
+	//-----Sending Email
+	if err := utilities.SendOtp(strconv.Itoa(otp), userReq.Email); err != nil {
+		response := utilities.Response{
+			StatusCode: http.StatusInternalServerError,
+			Message:    "Failed to send email",
+			Data:       nil,
+			Error:      err,
+		}
+		utilities.ResponseResult(c, response)
+		return
+	}
+
+	if err := database.DB.Create(&models.User{
+		Username:   userReq.Username,
+		Email:      userReq.Email,
+		Password:   pass,
+		Name:       userReq.Name,
+		Created_at: time.Now(),
+		Otp:        otp,
+	}); err != nil {
+		resp := utilities.Response{
+			StatusCode: 500,
+			Message:    "cannot creating your account, try again later.",
+			Error:      err,
+			Data:       nil,
+		}
+		utilities.ResponseResult(c, resp)
+		return
+	}
+
+	// sending the otp to specified email address
+	resp := utilities.Response{
+		StatusCode: 200,
+		Error:      nil,
+		Data:       "otp send to " + userReq.Email,
+	}
+	utilities.ResponseResult(c, resp)
 
 }
